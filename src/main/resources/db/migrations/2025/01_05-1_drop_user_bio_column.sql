@@ -1,0 +1,2 @@
+ALTER TABLE "TelegramUsers"
+DROP COLUMN bio
