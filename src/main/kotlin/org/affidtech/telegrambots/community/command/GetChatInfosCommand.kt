@@ -1,8 +1,8 @@
 package org.affidtech.telegrambots.community.command
 
+import org.affidtech.exposed.postgres.containsNullable
 import org.affidtech.telegrambots.community.entity.TelegramGroupDto
 import org.affidtech.telegrambots.community.entity.TelegramGroups
-import org.affidtech.telegrambots.exposed.posgtres.contains
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.helpCommand.ManCommand
@@ -27,7 +27,7 @@ class GetChatInfosCommand : ManCommand(COMMAND_IDENTIFIER, COMMAND_DESCRIPTION, 
         val chatId = chat?.id ?: return
 
         val groups = transaction {
-            TelegramGroups.selectAll().where { TelegramGroups.administrators.contains(userId) }.map {
+            TelegramGroups.selectAll().where { TelegramGroups.administrators.containsNullable(userId) }.map {
                 TelegramGroupDto(
                     id = it[TelegramGroups.id].value,
                     username = it[TelegramGroups.username],

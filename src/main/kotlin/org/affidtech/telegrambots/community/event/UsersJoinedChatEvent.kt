@@ -1,11 +1,11 @@
 package org.affidtech.telegrambots.community.event
 
+import org.affidtech.exposed.postgres.appendNullable
 import org.affidtech.telegrambots.community.entity.GlobalPropertiesTable
 import org.affidtech.telegrambots.community.entity.TelegramGroups
 import org.affidtech.telegrambots.community.entity.TelegramUsers
 import org.affidtech.telegrambots.event.EventType
 import org.affidtech.telegrambots.event.IBotEvent
-import org.affidtech.telegrambots.exposed.posgtres.append
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.batchUpsert
 import org.jetbrains.exposed.sql.selectAll
@@ -45,7 +45,7 @@ class UsersJoinedChatEvent(override val botId: Long) : IBotIdAware, IBotEvent {
             TelegramUsers.batchUpsert(
                 newMembers,
                 onUpdate = {
-                    it[TelegramUsers.consistsOfGroups] = TelegramUsers.consistsOfGroups.append(groupId)
+                    it[TelegramUsers.consistsOfGroups] = TelegramUsers.consistsOfGroups.appendNullable(groupId)
                 }
             ) {
                 this[TelegramUsers.id] = it.id

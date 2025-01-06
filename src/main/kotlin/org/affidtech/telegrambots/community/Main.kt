@@ -1,7 +1,7 @@
-package org.affidtech.telegrambots
+package org.affidtech.telegrambots.community
 
-import org.affidtech.telegrambots.community.CommunityBot
-import org.affidtech.telegrambots.community.config.*
+import org.affidtech.telegrambots.community.config.appConfig
+import org.affidtech.telegrambots.community.config.initDatabase
 import org.telegram.telegrambots.webhook.TelegramBotsWebhookApplication
 import org.telegram.telegrambots.webhook.WebhookOptions
 

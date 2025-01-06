@@ -1,5 +1,6 @@
 package org.affidtech.telegrambots
 
+import org.affidtech.telegrambots.command.TelegramCommandBot
 import org.affidtech.telegrambots.event.*
 import org.telegram.telegrambots.extensions.bots.commandbot.CommandBot
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.CommandRegistry

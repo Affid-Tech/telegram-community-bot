@@ -1,4 +1,4 @@
-package org.affidtech.telegrambots
+package org.affidtech.telegrambots.command
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

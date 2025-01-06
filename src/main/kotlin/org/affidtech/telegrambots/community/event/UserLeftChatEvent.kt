@@ -1,10 +1,10 @@
 package org.affidtech.telegrambots.community.event
 
+import org.affidtech.exposed.postgres.removeNullable
 import org.affidtech.telegrambots.community.entity.TelegramGroups
 import org.affidtech.telegrambots.community.entity.TelegramUsers
 import org.affidtech.telegrambots.event.EventType
 import org.affidtech.telegrambots.event.IBotEvent
-import org.affidtech.telegrambots.exposed.posgtres.remove
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -27,12 +27,12 @@ class UserLeftChatEvent(override val botId: Long) : IBotIdAware, IBotEvent {
             TelegramGroups.update({ TelegramGroups.id eq groupId }) {
                 with(SqlExpressionBuilder) {
                     it[memberCount] = memberCount - 1
-                    it[administrators] = administrators.remove(leftMember.id)
+                    it[administrators] = administrators.removeNullable(leftMember.id)
                 }
             }
 
             TelegramUsers.update({ TelegramUsers.id eq leftMember.id }) {
-                it[consistsOfGroups] = consistsOfGroups.remove(groupId)
+                it[consistsOfGroups] = consistsOfGroups.removeNullable(groupId)
             }
         }
 

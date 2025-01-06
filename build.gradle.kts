@@ -13,6 +13,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -26,6 +27,8 @@ dependencies {
     implementation("org.telegram:telegrambots-webhook:8.0.0")
     implementation("org.telegram:telegrambots-client:8.0.0")
     implementation("org.telegram:telegrambots-extensions:8.0.0")
+    //Events extension
+    implementation("com.github.Affid:telegram-bots-events:1.0.0")
 
     //Yaml parsing
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
@@ -42,6 +45,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.57.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.57.0")
     implementation("org.jetbrains.exposed:exposed-java-time:0.57.0") // Support for Java Time API
+    implementation("com.github.Affid:exposed-postgres-arrays-extensions:1.0.0")
 
     implementation("org.liquibase:liquibase-core:4.30.0")
 
