@@ -29,3 +29,9 @@ botConfig:
     - chat_boost
     - removed_chat_boost
 appBaseUrl: ${APP_URL}
+db:
+  jdbcUrl: ${DB_URL:"jdbc:postgresql://localhost:5432/community_bot"}
+  username: ${DB_USERNAME:admin}
+  password: ${DB_PASSWORD:admin}
+  driverClassName: org.postgresql.Driver
+  schema: ${DB_SCHEMA:public}

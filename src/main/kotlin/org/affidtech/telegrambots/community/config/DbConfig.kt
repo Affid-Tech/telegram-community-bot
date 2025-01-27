@@ -10,12 +10,12 @@ import org.jetbrains.exposed.sql.Database
 
 val dataSource: HikariDataSource by lazy {
     HikariDataSource(HikariConfig().apply {
-        jdbcUrl = "jdbc:postgresql://localhost:5432/community_bot"
-        username = "admin"
-        password = "admin"
-        driverClassName = "org.postgresql.Driver"
+        jdbcUrl = appConfig.db.jdbcUrl
+        username = appConfig.db.username
+        password = appConfig.db.password
+        driverClassName = appConfig.db.driverClassName
         maximumPoolSize = 10
-        schema = "public"
+        schema = appConfig.db.schema
     })
 }
 
