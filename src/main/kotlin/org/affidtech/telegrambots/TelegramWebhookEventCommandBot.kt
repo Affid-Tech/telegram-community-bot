@@ -41,8 +41,8 @@ open class TelegramWebhookEventCommandBot(
     private val eventBot: TelegramEventBot = TelegramEventBot(eventRegistry = eventRegistry) { _ -> }
 ) : TelegramWebhookBot, CommandBot by commandBot, ICommandRegistry by commandBot, EventBot by eventBot, IEventRegistry by eventBot {
 
-    fun assignCommandBotOnMessageEvent() {
-        register(EventToCommandAdapter(commandBot))
+    fun assignCommandBotOnMessageEvent(filterCommands: (Update) -> Boolean = { false }) {
+        register(EventToCommandAdapter(commandBot, filterCommands))
     }
 
     override fun consumeUpdate(update: Update): BotApiMethod<*>? {
@@ -74,12 +74,16 @@ open class TelegramWebhookEventCommandBot(
         telegramClient.execute(SetMyDefaultAdministratorRights.builder().rights(rights).build())
     }
 
-    private class EventToCommandAdapter(private val commandBot: TelegramCommandBot) : IBotEvent {
+    private class EventToCommandAdapter(private val commandBot: TelegramCommandBot, private val filterCommands: (Update) -> Boolean = { false }) : IBotEvent {
         override val eventType: EventType
             get() = EventType.MESSAGE
 
         override fun processUpdate(telegramClient: TelegramClient, update: Update) {
             commandBot.processUpdate(update)
+        }
+
+        override fun filter(update: Update): Boolean {
+            return filterCommands(update)
         }
     }
 

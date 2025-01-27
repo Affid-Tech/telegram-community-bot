@@ -1,6 +1,8 @@
 package org.affidtech.telegrambots.community.command
 
+import org.affidtech.exposed.postgres.containsNullable
 import org.affidtech.telegrambots.community.entity.TelegramGroups
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand
@@ -54,7 +56,7 @@ class SetWelcomeMessageCommand : IBotCommand, IManCommand {
         }
 
         transaction {
-            TelegramGroups.update(where = { if (byId) TelegramGroups.id eq chatIdentifier.toLong() else TelegramGroups.username eq chatIdentifier }) {
+            TelegramGroups.update(where = { (if (byId) TelegramGroups.id eq chatIdentifier.toLong() else TelegramGroups.username eq chatIdentifier).and(TelegramGroups.administrators.containsNullable(message.from.id)) }) {
                 it[wm] = welcomeMessage
             }
         }

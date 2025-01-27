@@ -3,17 +3,16 @@ package org.affidtech.telegrambots.community.command
 import org.affidtech.telegrambots.community.entity.GlobalPropertiesTable
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.upsert
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.helpCommand.IManCommand
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.generics.TelegramClient
 
-class SetFooterCommand : IBotCommand, IManCommand {
+class SetFooterCommand : GlobalAdminOnlyCommand, IManCommand {
     companion object {
         private const val GLOBAL_FOOTER_KEY = "globalFooter"
         private const val COMMAND_IDENTIFIER = "set_footer"
-        private const val COMMAND_DESCRIPTION = "sets the reply message as a global message footer"
+        private const val COMMAND_DESCRIPTION = "sets the reply message as a global message footer. Global Admins only!"
         private val EXTENDED_DESCRIPTION = """This command sets the text of the reply message as a global message footer.
             |The text should be written in plain text or HTML. Supported syntax: https://core.telegram.org/bots/api#html-style
             |Usage:
@@ -25,7 +24,7 @@ class SetFooterCommand : IBotCommand, IManCommand {
 
     override fun getDescription() = COMMAND_DESCRIPTION
 
-    override fun processMessage(telegramClient: TelegramClient, message: Message, arguments: Array<String>) {
+    override fun adminOnlyCommand(telegramClient: TelegramClient, message: Message, arguments: Array<String>) {
         val footerText = message.replyToMessage?.text
 
         if (footerText.isNullOrBlank()) {

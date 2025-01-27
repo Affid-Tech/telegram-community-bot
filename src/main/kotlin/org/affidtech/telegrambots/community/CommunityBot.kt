@@ -16,20 +16,38 @@ class CommunityBot(
     botConfig: BotConfig,
     basePath: String,
     client: TelegramClient = OkHttpTelegramClient(botConfig.token),
-    commandRegistry: CommandRegistry = CommandRegistry(
-        client, true
-    ) { botConfig.username },
-    setWebhook: () -> Unit = { client.execute(SetWebhook.builder().allowedUpdates(botConfig.allowedUpdates).url(botUrl(basePath, botConfig)).dropPendingUpdates(true).build()) },
-    deleteWebhook: () -> Unit = { client.execute(DeleteWebhook()) }
+    commandRegistry: CommandRegistry = CommandRegistry(client, true) { botConfig.username }
 ) : TelegramWebhookEventCommandBot(
-    client, allowCommandsWithUsername = true, botUsernameSupplier = { botConfig.username }, botConfig.path, setWebhook, deleteWebhook, commandRegistry = commandRegistry
+    client,
+    allowCommandsWithUsername = true,
+    botUsernameSupplier = { botConfig.username },
+    botPath = botConfig.path,
+    setWebhook = createSetWebhook(client, botConfig, basePath),
+    deleteWebhook = { client.execute(DeleteWebhook()) },
+    commandRegistry = commandRegistry
 ) {
 
+    private val botId = client.execute(GetMe()).id
+
     init {
+        registerEvents()
+        registerCommands(commandRegistry)
+        configureRequiredAdminRights()
+    }
+
+    private fun registerCommands(commandRegistry: CommandRegistry) {
+        assignCommandBotOnMessageEvent { it.message?.chat?.isUserChat != true }
         registerAll(
-            HelpCommand(commandRegistry), SetFooterCommand(), FanoutCommand(), GetChatInfosCommand(), SetWelcomeMessageCommand()
+            HelpCommand(commandRegistry),
+            SetFooterCommand(),
+            FanoutCommand(),
+            GetChatInfosCommand(),
+            SetWelcomeMessageCommand()
         )
-        val botId = client.execute(GetMe()).id
+        submitCommands()
+    }
+
+    private fun registerEvents() {
         registerAll(
             BotJoinedChatEvent(),
             BotLeftChatEvent(botId),
@@ -44,30 +62,42 @@ class CommunityBot(
             ServiceSubmittedEvent(botId),
             VacancySubmittedEvent(botId)
         )
-        assignCommandBotOnMessageEvent()
-        submitCommands()
-        requiresAdminRights(
-            ChatAdministratorRights.builder()
-            .canManageChat(true)
-            .isAnonymous(false)
-            .canDeleteMessages(true)
-            .canChangeInfo(true)
-            .canInviteUsers(true)
-            .canPostMessages(true)
-            .canEditMessages(true)
-            .canPinMessages(true)
-            .canManageVideoChats(false)
-            .canEditStories(false)
-            .canPostStories(false)
-            .canDeleteStories(false)
-            .canRestrictMembers(false)
-            .canPromoteMembers(false)
-            .build())
     }
 
+    private fun configureRequiredAdminRights() {
+        requiresAdminRights(
+            ChatAdministratorRights.builder()
+                .canManageChat(true)
+                .isAnonymous(false)
+                .canDeleteMessages(true)
+                .canChangeInfo(true)
+                .canInviteUsers(true)
+                .canPostMessages(true)
+                .canEditMessages(true)
+                .canPinMessages(true)
+                .canManageVideoChats(false)
+                .canEditStories(false)
+                .canPostStories(false)
+                .canDeleteStories(false)
+                .canRestrictMembers(false)
+                .canPromoteMembers(false)
+                .build()
+        )
+    }
 
+    companion object {
+        private fun createSetWebhook(client: TelegramClient, botConfig: BotConfig, basePath: String): () -> Unit =
+            {
+                client.execute(
+                    SetWebhook.builder()
+                        .allowedUpdates(botConfig.allowedUpdates)
+                        .url(botUrl(basePath, botConfig))
+                        .dropPendingUpdates(true)
+                        .build()
+                )
+            }
 
+        private fun botUrl(basePath: String, botConfig: BotConfig) =
+            listOf(basePath.trimEnd('/'), botConfig.path.trimStart('/')).joinToString("/")
+    }
 }
-
-private fun botUrl(basePath: String, botConfig: BotConfig) =
-    listOf(basePath.trimEnd('/'), botConfig.path.trimStart('/')).joinToString("/")

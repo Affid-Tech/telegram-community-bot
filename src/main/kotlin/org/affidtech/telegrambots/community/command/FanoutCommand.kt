@@ -1,7 +1,6 @@
 package org.affidtech.telegrambots.community.command
 
 import org.affidtech.telegrambots.community.entity.GlobalPropertiesTable
-import org.affidtech.telegrambots.community.entity.TelegramGroups
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.Logger
@@ -49,19 +48,21 @@ class FanoutCommand : IBotCommand, IManCommand {
         val pin = arguments.any { it.equals("-pin", ignoreCase = true) }
         val silent = arguments.any { it.equals("-silent", ignoreCase = true) }
 
-        val targetChats = if (preview) listOf(message.chatId) else allChats()
+        val targetChats = if (preview) listOf(message.chatId) else message.from?.id?.let { allChats(it) } ?: return
 
         runCatching {
-            val sentMessages = targetChats.map {
+            targetChats.map {
                 telegramClient.execute(
                     SendMessage.builder().text(addFooter(fanoutMessage, footerRequired)).chatId(it).disableNotification(silent).parseMode("html").build()
                 )
-            }
-            if (pin) {
-                sentMessages.forEach { message ->
-                    telegramClient.execute(PinChatMessage.builder().messageId(message.messageId).chatId(message.chatId).disableNotification(silent).build())
+            }.also {
+                if (pin) {
+                    it.forEach { message ->
+                        telegramClient.execute(PinChatMessage.builder().messageId(message.messageId).chatId(message.chatId).disableNotification(silent).build())
+                    }
                 }
             }
+
         }.onFailure { exception ->
             (exception as? TelegramApiRequestException)?.let {
                 if (it.errorCode == 400) {
@@ -82,10 +83,8 @@ class FanoutCommand : IBotCommand, IManCommand {
         return "$text\n\n${globalFooter()}"
     }
 
-    private fun allChats(): List<Long> {
-        return transaction {
-            TelegramGroups.select(TelegramGroups.id).where { TelegramGroups.botEnabled eq true }.map { it[TelegramGroups.id].value }
-        }
+    private fun allChats(adminId: Long): List<Long> {
+        return getManagedGroups(adminId).map { it.id }
     }
 
     private fun globalFooter(): String {
@@ -94,7 +93,6 @@ class FanoutCommand : IBotCommand, IManCommand {
             all.first()
         }
     }
-
 
     override fun getExtendedDescription() = EXTENDED_DESCRIPTION
 
