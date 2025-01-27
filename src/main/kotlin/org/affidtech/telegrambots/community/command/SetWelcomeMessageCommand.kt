@@ -56,9 +56,25 @@ class SetWelcomeMessageCommand : IBotCommand, IManCommand {
         }
 
         transaction {
-            TelegramGroups.update(where = { (if (byId) TelegramGroups.id eq chatIdentifier.toLong() else TelegramGroups.username eq chatIdentifier).and(TelegramGroups.administrators.containsNullable(message.from.id)) }) {
+            TelegramGroups.update(where = {
+                (if (byId) TelegramGroups.id eq chatIdentifier.toLong() else TelegramGroups.username eq chatIdentifier).and(
+                    TelegramGroups.administrators.containsNullable(
+                        message.from.id
+                    )
+                )
+            }) {
                 it[wm] = welcomeMessage
+            }.also {
+                telegramClient.execute(SendMessage.builder().chatId(message.chatId).text(getReplyMessage(it)).build())
             }
+        }
+    }
+
+    private fun getReplyMessage(it: Int): String {
+        return if (it == 0) {
+            "Nothing happened. Please check your permissions or ensure the bot has the necessary access to the group."
+        } else {
+            "The welcome message has been successfully updated."
         }
     }
 
