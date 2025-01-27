@@ -21,7 +21,7 @@ class GetChatInfosCommand : ManCommand(COMMAND_IDENTIFIER, COMMAND_DESCRIPTION, 
         val userId = user?.id ?: return
         val chatId = chat?.id ?: return
 
-        val groups = getManagedGroups(userId)
+        val groups = getManagedGroups(adminId = userId, showDisabled = true)
 
         val responseText = "Available groups:\n" + (groups.joinToString(separator = "\n") {
             """  <b>${it.title}:</b>
