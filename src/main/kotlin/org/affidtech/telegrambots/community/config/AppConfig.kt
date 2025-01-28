@@ -4,6 +4,7 @@ data class AppConfig(
     val globalAdministratorIds: List<Long>,
     val botConfig: BotConfig,
     val appBaseUrl: String,
+    val appPort: Int,
     val db: Db
 )
 

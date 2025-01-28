@@ -75,6 +75,17 @@ cd community-bot
 ./gradlew build
 ```
 
+### **Required env variables**
+- GLOBAL_ADMINS : a comma-separated list in square brackets
+- BOT_TOKEN
+- BOT_USERNAME (without @ sign)
+- APP_URL
+- APP_PORT (9091 by default)
+- DB_URL
+- DB_USERNAME
+- DB_PASSWORD
+- DB_SCHEMA ('public' by default)
+
 ### **Run Locally**
 For local development with Docker:
 ```sh
@@ -91,7 +102,7 @@ docker build -t community-bot . --network=host
 ```
 
 ```shell
-docker run --env-file=config.env -d --name community-bot community-bot
+docker run --env-file=config.env -p 9091:9091 -d --name community-bot community-bot
 ```
 
 ## Contribution Guide

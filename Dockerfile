@@ -29,11 +29,5 @@ WORKDIR /app
 # Copy the built JAR file from the builder stage
 COPY --from=build /app/build/libs/community-bot-*.jar /app/bot.jar
 
-# Expose ports if necessary (example: 8080)
-EXPOSE 8080
-
-# Set environment variables (if needed)
-ENV BOT_ENV=production
-
 # Run the bot
 ENTRYPOINT ["java", "-jar", "/app/bot.jar"]

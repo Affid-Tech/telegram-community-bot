@@ -12,10 +12,9 @@ class Main{
         fun main(args: Array<String>) {
             initDatabase()
             runCatching {
-                TelegramBotsWebhookApplication(WebhookOptions.builder().enableRequestLogging(true).build()).use {
+                TelegramBotsWebhookApplication(WebhookOptions.builder().port(appConfig.appPort).enableRequestLogging(true).build()).use {
                     it.registerBot(CommunityBot(appConfig.botConfig, appConfig.appBaseUrl))
                     Runtime.getRuntime().addShutdownHook(Thread {
-                        println("Gracefully shutting down...")
                         it.stop()
                     })
                     Thread.currentThread().join()

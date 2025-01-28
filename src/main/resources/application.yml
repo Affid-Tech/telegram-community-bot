@@ -29,6 +29,7 @@ botConfig:
     - chat_boost
     - removed_chat_boost
 appBaseUrl: ${APP_URL}
+appPort: ${APP_PORT:9091}
 db:
   jdbcUrl: ${DB_URL:jdbc:postgresql://localhost:5432/community_bot}
   username: ${DB_USERNAME:admin}
