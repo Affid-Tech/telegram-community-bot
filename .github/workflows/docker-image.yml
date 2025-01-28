@@ -20,7 +20,7 @@ jobs:
    
     - name: Build the Docker image
       run: |
-        IMAGE_NAME="ghcr.io/${{ github.repository_owner }}/telegram_community_bot"
+        IMAGE_NAME="ghcr.io/$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')/telegram_community_bot"
         TIMESTAMP=$(date +%s)
         docker build . --file Dockerfile --tag $IMAGE_NAME:$TIMESTAMP
         docker push $IMAGE_NAME:$TIMESTAMP
