@@ -23,5 +23,5 @@ jobs:
         IMAGE_NAME="ghcr.io/$ORG_NAME/telegram_community_bot"
         TIMESTAMP=$(date +%s)
         
-        docker build . --file Dockerfile --tag $IMAGE_NAME:$TIMESTAMP
+        docker build . --file Dockerfile --tag $IMAGE_NAME:latest
         docker push $IMAGE_NAME:$TIMESTAMP
