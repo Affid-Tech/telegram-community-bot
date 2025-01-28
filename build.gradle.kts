@@ -1,8 +1,8 @@
 plugins {
     kotlin("jvm") version "2.0.21"
-    id("application")
+    application
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
-
 group = "org.affidtech"
 version = "1.0-SNAPSHOT"
 
@@ -20,7 +20,7 @@ val javalinVersion = "6.4.0"
 val bouncycastleVersion = 1.78
 
 application {
-    mainClass.set("org.affidtech.telegrambots.Main.kt")
+    mainClass.set("org.affidtech.telegrambots.community.Main")
 }
 
 repositories {

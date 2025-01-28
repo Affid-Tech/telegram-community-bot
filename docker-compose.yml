@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  community_network:
+    driver: bridge
+
 services:
   db:
     image: postgres:latest
@@ -13,6 +17,20 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - community_network
+
+  community-bot:
+    image: community-bot
+    depends_on:
+      - db
+    env_file:
+      - config.env
+    networks:
+      - community_network
+    ports:
+      - "9091:9091"
+
 
 volumes:
   db_data:
