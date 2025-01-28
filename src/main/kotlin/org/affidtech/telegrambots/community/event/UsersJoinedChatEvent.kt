@@ -63,7 +63,11 @@ class UsersJoinedChatEvent(override val botId: Long) : IBotIdAware, IBotEvent {
         runCatching {
             telegramClient.execute(DeleteMessage.builder().chatId(groupId).messageId(update.message.messageId).build())
             if(wmData.second > -1){
-                telegramClient.execute(DeleteMessage.builder().chatId(groupId).messageId(wmData.second.toInt()).build())
+                runCatching {
+                    telegramClient.execute(DeleteMessage.builder().chatId(groupId).messageId(wmData.second.toInt()).build())
+                }.onFailure {
+                    logger.error("Error occurred while deleting previous welcome message with id '${wmData.second}' in the chat '$groupId'", it)
+                }
             }
 
             telegramClient.execute(
@@ -77,7 +81,7 @@ class UsersJoinedChatEvent(override val botId: Long) : IBotIdAware, IBotEvent {
             }
 
         }.onFailure {
-            logger.error("Error occurred while greeting new members", it)
+            logger.error("Error occurred while greeting new members in the chat 'groupId'", it)
         }
 
     }
