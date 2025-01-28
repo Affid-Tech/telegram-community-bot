@@ -14,12 +14,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Log in to GitHub Container Registry with PAT
-      run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-   
-    - name: Build the Docker image
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+
+    - name: Build and Push Docker Image
       run: |
-        IMAGE_NAME="ghcr.io/$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')/telegram_community_bot"
+        ORG_NAME="your-org-name"  # Replace with your organization name
+        IMAGE_NAME="ghcr.io/$ORG_NAME/telegram_community_bot"
         TIMESTAMP=$(date +%s)
+        
         docker build . --file Dockerfile --tag $IMAGE_NAME:$TIMESTAMP
         docker push $IMAGE_NAME:$TIMESTAMP
