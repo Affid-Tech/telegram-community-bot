@@ -19,7 +19,7 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
-        ORG_NAME="your-org-name"  # Replace with your organization name
+        ORG_NAME="affid-tech"
         IMAGE_NAME="ghcr.io/$ORG_NAME/telegram_community_bot"
         TIMESTAMP=$(date +%s)
         
