@@ -1,9 +1,3 @@
-Here’s a well-structured **README.md** that explains the entire **community-bot** repository, covering its purpose, functionality, events, setup, and deployment.
-
----
-
-### **README.md**
-
 # Community Bot
 
 **Community Bot** is a Kotlin-based Telegram bot designed for automation, user engagement, and streamlined interactions within a community. It supports event-driven actions such as user management, submissions handling, and bot activity tracking.
