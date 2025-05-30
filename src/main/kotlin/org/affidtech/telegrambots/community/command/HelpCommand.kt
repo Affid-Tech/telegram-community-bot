@@ -75,6 +75,10 @@ class HelpCommand(private val commandRegistry: ICommandRegistry) : ManCommand(CO
     override fun execute(telegramClient: TelegramClient, user: User, chat: Chat, arguments: Array<String?>) {
         if (arguments.isNotEmpty()) {
             val command = commandRegistry.getRegisteredCommand(arguments[0])
+            if(command == null){
+                 telegramClient.execute(SendMessage.builder().chatId(chat.id).text("Unknown command").parseMode("HTML").build())
+                 return
+            }
             val reply = getManText(command)
             try {
                 telegramClient.execute(SendMessage.builder().chatId(chat.id).text(reply).parseMode("HTML").build())
