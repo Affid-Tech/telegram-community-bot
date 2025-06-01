@@ -23,7 +23,7 @@ class CommunityBot(
     botUsernameSupplier = { botConfig.username },
     botPath = botConfig.path,
     setWebhook = createSetWebhook(client, botConfig, basePath),
-    deleteWebhook = { },
+    deleteWebhook = { client.execute(DeleteWebhook()) },
     commandRegistry = commandRegistry
 ) {
 
