@@ -30,4 +30,4 @@ WORKDIR /app
 COPY --from=build /app/build/libs/community-bot-*.jar /app/bot.jar
 
 # Run the bot
-ENTRYPOINT ["java", "-jar", "/app/bot.jar"]
+ENTRYPOINT ["java", "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-Xverify:none", "-XX:+UseSerialGC", "-Xss256k", "-noverify", "-jar", "/app/bot.jar"]
