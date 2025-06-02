@@ -31,6 +31,9 @@ fun runLiquibase() {
 
 fun initDatabase() {
     runLiquibase() // Ensure schema migrations are applied first
+
+    val schema = Schema("community_bot")
+    SchemaUtils.setSchema(schema)
     
     Database.connect(dataSource) // Connect Exposed to the already-migrated database
 }
