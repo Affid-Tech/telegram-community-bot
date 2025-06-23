@@ -23,7 +23,7 @@ class GetChatInfosCommand : ManCommand(COMMAND_IDENTIFIER, COMMAND_DESCRIPTION, 
 
         val groups = getManagedGroups(adminId = userId, showDisabled = true)
 
-        val responseText = "Available groups:\n" + (groups.joinToString(separator = "\n") {
+        val messages = listOf("\"Available groups:") + groups.map{
             """  <b>${it.title}:</b>
                 |    ${groupDetail("Id", it.id.toString())}
                 |    ${groupDetail("Username", tgLink(it.username), wrapper = {str -> str})}
@@ -34,10 +34,12 @@ class GetChatInfosCommand : ManCommand(COMMAND_IDENTIFIER, COMMAND_DESCRIPTION, 
                 |    ${groupDetail("Member Count", it.memberCount.toString())}
                 |    ${groupDetail("Administrators", listOfCode(it.administrators?.map(Long::toString) ?: emptyList()), wrapper = {str -> str})}
             """.trimMargin()
-        }.ifEmpty { "No groups found where you are an administrator." })
+        }.ifEmpty { listOf("<i>No groups available</i>") }
 
         // Send the response message to the chat
-        telegramClient.execute(SendMessage.builder().chatId(chatId).text(responseText).parseMode("html").build())
+        messages.forEach {
+            telegramClient.execute(SendMessage.builder().chatId(chatId).text(it).parseMode("html").build())
+        }
     }
 
     private fun code(text: String) = "<code>$text</code>"
