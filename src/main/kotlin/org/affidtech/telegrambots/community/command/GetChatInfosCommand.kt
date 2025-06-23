@@ -23,7 +23,7 @@ class GetChatInfosCommand : ManCommand(COMMAND_IDENTIFIER, COMMAND_DESCRIPTION, 
 
         val groups = getManagedGroups(adminId = userId, showDisabled = true)
 
-        val messages = listOf("\"Available groups:") + groups.map{
+        val messages = listOf("Available groups:") + groups.map{
             """  <b>${it.title}:</b>
                 |    ${groupDetail("Id", it.id.toString())}
                 |    ${groupDetail("Username", tgLink(it.username), wrapper = {str -> str})}
