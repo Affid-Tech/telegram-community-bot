@@ -2,18 +2,23 @@ package org.affidtech.telegrambots
 
 import org.affidtech.telegrambots.command.TelegramCommandBot
 import org.affidtech.telegrambots.event.*
+import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.extensions.bots.commandbot.CommandBot
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.CommandRegistry
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.ICommandRegistry
 import org.telegram.telegrambots.meta.api.methods.adminrights.SetMyDefaultAdministratorRights
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.adminrights.ChatAdministratorRights
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeAllPrivateChats
 import org.telegram.telegrambots.meta.generics.TelegramClient
 import org.telegram.telegrambots.webhook.TelegramWebhookBot
+import java.util.*
+
+private val log = LoggerFactory.getLogger(TelegramWebhookEventCommandBot::class.java)
 
 /**
  * TelegramWebhookEventCommandBot combines webhook bot functionality, command handling,
@@ -40,6 +45,7 @@ open class TelegramWebhookEventCommandBot(
     private val commandBot: TelegramCommandBot = TelegramCommandBot(commandRegistry = commandRegistry) { _ -> },
     private val eventBot: TelegramEventBot = TelegramEventBot(eventRegistry = eventRegistry) { _ -> }
 ) : TelegramWebhookBot, CommandBot by commandBot, ICommandRegistry by commandBot, EventBot by eventBot, IEventRegistry by eventBot {
+
 
     fun assignCommandBotOnMessageEvent(filterCommands: (Update) -> Boolean = { false }) {
         register(EventToCommandAdapter(commandBot, filterCommands))
@@ -79,7 +85,17 @@ open class TelegramWebhookEventCommandBot(
             get() = EventType.MESSAGE
 
         override fun processUpdate(telegramClient: TelegramClient, update: Update) {
-            commandBot.processUpdate(update)
+            runCatching {
+                commandBot.processUpdate(update)
+            }.onFailure {
+                val errorId = UUID.randomUUID()
+                log.error("Error occurred while processing command. Error ID: {}", errorId, it)
+                runCatching {
+                    telegramClient.execute(
+                        SendMessage.builder().chatId(update.message.chatId).text("Error occurred while processing command. Please contact support. Error ID: $errorId").build()
+                    )
+                }
+            }
         }
 
         override fun filter(update: Update): Boolean {
